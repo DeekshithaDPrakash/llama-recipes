@@ -65,7 +65,21 @@ from transformers.models.mllama.modeling_mllama import (
     MllamaVisionEncoderLayer,
 )
 
+## added
+'''
+PATH = '/home/a100server/shared_folder/FFT_mnt/hf/'
 
+os.environ['TRANSFORMERS_CACHE'] = PATH
+os.environ['HF_HOME'] = PATH
+
+os.environ['HF_DATASETS_CACHE'] = PATH
+os.environ['TORCH_HOME'] = PATH
+
+# Allocate only 60% of total available GPU memory
+torch.cuda.set_per_process_memory_fraction(0.5, 0)
+torch.cuda.set_per_process_memory_fraction(0.7, 1)  # If using multiple GPUs
+
+'''
 def setup_wandb(train_config, fsdp_config, **kwargs):
     try:
         import wandb
