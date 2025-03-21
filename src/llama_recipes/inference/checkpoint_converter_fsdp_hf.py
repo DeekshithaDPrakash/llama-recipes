@@ -80,7 +80,7 @@ def main(
 if __name__ == "__main__":
     fire.Fire(main)
 
-
+'''
 ## using GPU
 import os
 import sys
@@ -220,4 +220,5 @@ if __name__ == "__main__":
 '''
 python src/llama_recipes/inference/checkpoint_converter_fsdp_hf.py   --fsdp_checkpoint_path "/home/a100server/shared_folder/FFT_mnt/FFT_Research/llama-recipes/fft_linkbricks_8b_train_3.12.0_20250312_v1_cpy/fft_linkbricks_8b_train_3.12.0_20250317/"   --consolidated_model_path "/home/a100server/shared_folder/FFT_data/Triton_Inference_Server/TensorRT_FFT_LB_train_3.12.0_20250317/fft_linkbricks_8b_train_3.12.0_20250317"   --gpu_id 1   --max_shard_size "5GB"
 
+'''
 '''
