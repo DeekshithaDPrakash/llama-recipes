@@ -33,6 +33,81 @@ class ConcatDataset(Dataset):
     def __len__(self):
         return len(self.samples)
 
+## added
+'''
+### WoRKS for all================= chunked data and line-by-line text too :)
+class ConcatDataset(Dataset):
+    def __init__(self, dataset, chunk_size=4096):
+        self.dataset = dataset
+        self.chunk_size = chunk_size
+        self.samples = []
+        
+        # Use a simple buffer approach
+        buffer = {
+            "input_ids": [],
+            "attention_mask": [],
+            "labels": [],
+        }
+        current_length = 0
+        
+        print("Dataset before Concat:", len(self.dataset))
+        print("Type of dataset_train:", type(self.dataset))
+        
+        for sample in tqdm(self.dataset, desc="Preprocessing dataset", dynamic_ncols=True):
+            sample_length = len(sample["input_ids"])
+            
+            # Check if sample is too large
+            if sample_length > self.chunk_size:
+                print(f"Warning: Skipping conversation of length {sample_length} (exceeds chunk_size)")
+                continue
+                
+            # If adding this sample would exceed chunk_size, finalize current chunk
+            if current_length + sample_length > self.chunk_size:
+                # Create new sample from buffer and pad
+                padded_sample = self._pad_sample(buffer, current_length)
+                self.samples.append(padded_sample)
+                
+                # Reset buffer
+                buffer = {
+                    "input_ids": [],
+                    "attention_mask": [],
+                    "labels": [],
+                }
+                current_length = 0
+            
+            # Add sample to buffer
+            for k, v in sample.items():
+                buffer[k].extend(v)
+            current_length += sample_length
+        
+        # Don't forget remaining data in buffer
+        if current_length > 0:
+            padded_sample = self._pad_sample(buffer, current_length)
+            self.samples.append(padded_sample)
+            
+        print(f"Created {len(self.samples)} chunks from {len(self.dataset)} samples")
+
+    def _pad_sample(self, buffer, current_length):
+        """Pad the buffer to reach chunk_size"""
+        padding_length = self.chunk_size - current_length
+        if padding_length > 0:
+            # Create a copy to avoid modifying the buffer
+            padded = {k: v.copy() for k, v in buffer.items()}
+            
+            # Add padding
+            padded["input_ids"].extend([0] * padding_length)  # 0 as pad token
+            padded["attention_mask"].extend([0] * padding_length)  # 0 for padding positions
+            padded["labels"].extend([-100] * padding_length)  # -100 to ignore in loss
+            return padded
+        else:
+            return buffer
+
+    def __getitem__(self, idx):
+        return self.samples[idx]
+
+    def __len__(self):
+        return len(self.samples)
+'''
 ## added -------------------------------------------------------------
 '''
 #------------- padding single text----------------
